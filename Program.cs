@@ -60,7 +60,7 @@ List<Plant> plants = new List<Plant>()
         City = "City 6",
         ZIP = 77777,
         Sold = false,
-        AvailableUntil = new DateTime(2023, 11, 18)
+        AvailableUntil = new DateTime(2023, 11, 22)
     }
 };
 
@@ -290,27 +290,16 @@ void PostAPlant()
 void AdoptAPlant()
 {
     // made a new list to hold my available plants
-    List<Plant> availablePlants = new List<Plant>();
-
     DateTime now = DateTime.Now;
-
-    Console.Clear();
-
-    Console.WriteLine("Choose one of the following:");
     // used a for loop to display the plants from the new filtered list
-    foreach (Plant plant in plants)
-    {
-        if (!plant.Sold && plant.AvailableUntil > now)
-            availablePlants.Add(plant);
-    }
-
+    List<Plant> availablePlants = plants.Where((plant) => !plant.Sold && plant.AvailableUntil > now).ToList();
+    Console.Clear();
+    Console.WriteLine("Choose one of the following:");
     for (int i = 0; i < availablePlants.Count; i++)
     {
         Console.WriteLine($"{i + 1}. {availablePlants[i].Species}");
     }
-
     Plant chosenPlant = null;
-
     while (chosenPlant == null)
     {
         try
@@ -366,8 +355,6 @@ void PlantOfTheDay()
 {
     Plant plantOfTheDay = plants[randomInteger];
 
-    // plantOfTheDay = plants[randomInteger];
-
     while (plantOfTheDay.Sold)
     {
         randomInteger = random.Next(1, plants.Count);
@@ -396,13 +383,7 @@ void SearchPlantsByLightNeeds()
             Console.WriteLine("You entered a string please try again");
         }
     }
-    foreach (Plant plant in plants)
-    {
-        if (!plant.Sold && plant.LightNeeds == chosenInteger)
-        {
-            plantsByLightNeeds.Add(plant);
-        }
-    }
+    plantsByLightNeeds = plants.Where((plant) => !plant.Sold && plant.LightNeeds == chosenInteger).ToList();
     foreach (Plant plant in plantsByLightNeeds)
     {
         Console.WriteLine($"{plant.Species} is sold? {plant.Sold} light needed? {plant.LightNeeds}");
@@ -414,17 +395,17 @@ void AppStatistics()
 {
     // display lowest price plant name
     Plant lowestPricedPlant = plants[0];
-    // number of plants available (not sold AND still available)
-    List<Plant> availablePlants = new List<Plant>();
-
+    // todays date
     DateTime now = DateTime.Now;
+    // number of plants available (not sold AND still available)
+    List<Plant> availablePlants = plants.Where((plant) => !plant.Sold && plant.AvailableUntil > now).ToList();
     // name of plant with highest light needs
     Plant highestLightNeedPlant = plants[0];
     // average ligh needs
     int totalLightNeed = 0;
     // percentage of plants adopted
-    List<Plant> adoptedPlants = new List<Plant>();
-
+    // List<Plant> adoptedPlants = new List<Plant>();
+    List<Plant> adoptedPlants = plants.Where((plant) => plant.Sold).ToList();
     for (int i = 0; i < plants.Count; i++)
     {
         Plant currentPlant = plants[i];
@@ -436,15 +417,7 @@ void AppStatistics()
         {
             lowestPricedPlant = currentPlant;
         }
-        if (!currentPlant.Sold && currentPlant.AvailableUntil > now)
-        {
-            availablePlants.Add(currentPlant);
-        }
         totalLightNeed += currentPlant.LightNeeds;
-        if (plants[i].Sold)
-        {
-            adoptedPlants.Add(plants[i]);
-        }
     }
 
     double averageLightNeed = (double)totalLightNeed / plants.Count;
